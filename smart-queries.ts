@@ -5,7 +5,7 @@ export const smartQueries = <
   Params extends Record<string, unknown> = DefaultParams
 >(
   url: UrlLike,
-  schema?: Schema
+  schema?: Schema | Schema<Params>
 ): Queries<Params> | null => {
   const searchParams =
     url instanceof URLSearchParams ? url : convertToSearchParams(url);

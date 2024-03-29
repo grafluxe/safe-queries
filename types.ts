@@ -14,7 +14,7 @@ type Validater<T> = (
   rawParams: Record<string, string>
 ) => boolean;
 
-export type Config = {
+export type Config<T> = {
   require?: boolean;
 } & (
   | {
@@ -23,30 +23,25 @@ export type Config = {
       validate?: Validater<string>;
     }
   | {
-      coerceTo: "number";
-      map?: Mapper<number>;
-      validate?: Validater<number>;
-    }
-  | {
-      coerceTo: "boolean";
-      map?: Mapper<boolean | null>;
-      validate?: Validater<boolean | null>;
-    }
-  | {
-      coerceTo: "string[]" | "Array<string>";
-      map?: Mapper<string[]>;
-      validate?: Validater<string[]>;
-    }
-  | {
-      coerceTo: "number[]" | "Array<number>";
-      map?: Mapper<number[]>;
-      validate?: Validater<number[]>;
+      coerceTo: T extends number
+        ? "number"
+        : T extends boolean
+        ? "boolean"
+        : T extends string[]
+        ? "string[]" | "Array<string>"
+        : T extends number[]
+        ? "number[]" | "Array<number>"
+        : never;
+      map?: Mapper<T>;
+      validate?: Validater<T>;
     }
 );
 
-export type Schema<Keys extends string = string> = Record<Keys, Config>;
-
 export type DefaultParams = Record<string, unknown>;
+
+export type Schema<Params extends Record<string, unknown> = DefaultParams> = {
+  [K in keyof Params]: Config<Params[K]>;
+};
 
 export type Queries<Params = DefaultParams> = {
   raw: string;

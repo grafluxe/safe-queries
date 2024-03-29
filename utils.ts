@@ -17,7 +17,8 @@ export const convertToSearchParams = (url: Exclude<UrlLike, URLSearchParams>) =>
 
 export const coerce = (
   val: string,
-  coerceTo: NonNullable<Config["coerceTo"]>
+  // deno-lint-ignore no-explicit-any
+  coerceTo: NonNullable<Config<any>["coerceTo"]>
 ): ValidType | null => {
   switch (coerceTo) {
     case "number":
