@@ -1,8 +1,6 @@
 export type UrlLike = URL | URLSearchParams | `http${"" | "s"}://${string}`;
 
-type ValidArray = (string | number | boolean)[];
-
-export type ValidType = string | number | boolean | ValidArray;
+export type ValidType = string | number | boolean | string[] | number[];
 
 type Mapper<T> = (
   val: T,
