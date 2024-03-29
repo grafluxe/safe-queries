@@ -1,0 +1,72 @@
+import { DefaultParams, Queries, Schema, UrlLike } from "./types.ts";
+import { coerce, convertToSearchParams, getRaw } from "./utils.ts";
+
+export const smartQueries = <
+  Params extends Record<string, unknown> = DefaultParams
+>(
+  url: UrlLike,
+  schema?: Schema
+): Queries<Params> | null => {
+  const searchParams =
+    url instanceof URLSearchParams ? url : convertToSearchParams(url);
+  const param: DefaultParams = {};
+  const foreign: Record<string, string> = {};
+  const rawParams: Record<string, string> = {};
+  const error: Queries["error"] = {};
+
+  let hasForeign = false;
+  let hasError = false;
+
+  if (searchParams.size === 0) {
+    return null;
+  }
+
+  for (const [key, val] of searchParams) {
+    rawParams[key] = val;
+
+    if (!schema || !(key in schema)) {
+      hasForeign = true;
+      foreign[key] = val;
+    }
+  }
+
+  for (const key in schema) {
+    const { require, coerceTo, map, validate } = schema[key];
+    const rawVal = searchParams.get(key)!;
+    const val = coerceTo ? coerce(rawVal, coerceTo) : rawVal;
+
+    if (require && !searchParams.has(key)) {
+      hasError = true;
+      if (!error.requiredKeys) error.requiredKeys = [];
+      error.requiredKeys.push(key);
+      continue;
+    }
+
+    if (searchParams.has(key)) {
+      const finalVal = map ? map(val as never, key, rawParams) : val;
+
+      if (validate) {
+        if (!validate(finalVal as never, key, rawParams)) {
+          hasError = true;
+          if (!error.invalidKeys) error.invalidKeys = [];
+          error.invalidKeys.push(key);
+        }
+      }
+
+      param[key] = finalVal;
+    }
+  }
+
+  return Object.assign(
+    {
+      raw: getRaw(url),
+      ...(hasForeign ? { foreign } : {}),
+    },
+    schema
+      ? {
+          param,
+          ...(hasError ? { error } : {}),
+        }
+      : {}
+  );
+};
