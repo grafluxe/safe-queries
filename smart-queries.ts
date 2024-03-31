@@ -11,7 +11,7 @@ export const smartQueries = <
     url instanceof URLSearchParams ? url : convertToSearchParams(url);
   const param: Record<string, unknown> = {};
   const foreign: Record<string, string> = {};
-  const rawParams: Record<string, string> = {};
+  const rawParams: Record<string, string | string[]> = {};
   const error: ParamError = {};
 
   let hasForeign = false;
@@ -22,16 +22,17 @@ export const smartQueries = <
   }
 
   for (const [key, val] of searchParams) {
+    const vals = searchParams.getAll(key);
+
     if (!schema) {
-      param[key] = searchParams.get(key);
-      continue;
-    }
+      param[key] = vals.length === 1 ? vals.at(0) : vals;
+    } else {
+      rawParams[key] = vals.length === 1 ? vals.at(0)! : vals;
 
-    rawParams[key] = searchParams.get(key)!;
-
-    if (!(key in schema)) {
-      hasForeign = true;
-      foreign[key] = val;
+      if (!(key in schema)) {
+        hasForeign = true;
+        foreign[key] = val;
+      }
     }
   }
 
@@ -46,18 +47,22 @@ export const smartQueries = <
     }
 
     if (searchParams.has(key)) {
-      const val = searchParams.get(key)!;
-      const finalVal = map ? map(val as never, key, rawParams) : val;
+      const vals = searchParams.getAll(key)!;
+      const finalVals: unknown[] = map
+        ? vals.map((val) => map(val as never, key, rawParams))
+        : vals;
 
       if (validate) {
-        if (!validate(finalVal as never, key, rawParams)) {
-          hasError = true;
-          if (!error.invalidKeys) error.invalidKeys = [];
-          error.invalidKeys.push(key);
-        }
+        finalVals.map((val) => {
+          if (!validate(val as never, key, rawParams)) {
+            hasError = true;
+            if (!error.invalidKeys) error.invalidKeys = [];
+            if (!error.invalidKeys.includes(key)) error.invalidKeys.push(key);
+          }
+        });
       }
 
-      param[key] = finalVal;
+      param[key] = finalVals.length === 1 ? finalVals.at(0) : finalVals;
     }
   }
 

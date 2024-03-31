@@ -8,12 +8,12 @@ export type Schema<
     map?: (
       val: string,
       key: string,
-      rawParams: Record<string, string>
+      rawParams: Record<string, string | string[]>
     ) => Params[K];
     validate?: (
       val: Params[K],
       key: string,
-      rawParams: Record<string, string>
+      rawParams: Record<string, string | string[]>
     ) => boolean;
   };
 };
@@ -25,7 +25,9 @@ export type ParamError = {
 
 export type Queries<Params> = {
   raw: string;
-  param: Params;
+  param: {
+    [K in keyof Params]: Params[K] | Params[K][];
+  };
   foreign?: string[];
   error?: ParamError;
 };
