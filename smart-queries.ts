@@ -22,9 +22,14 @@ export const smartQueries = <
   }
 
   for (const [key, val] of searchParams) {
-    rawParams[key] = val;
+    if (!schema) {
+      param[key] = searchParams.get(key);
+      continue;
+    }
 
-    if (!schema || !(key in schema)) {
+    rawParams[key] = searchParams.get(key)!;
+
+    if (!(key in schema)) {
       hasForeign = true;
       foreign[key] = val;
     }
@@ -59,11 +64,12 @@ export const smartQueries = <
   return Object.assign(
     {
       raw: getRaw(url),
-      ...(hasForeign ? { foreign } : {}),
+      param,
     },
     schema
       ? {
           param,
+          ...(hasForeign ? { foreign } : {}),
           ...(hasError ? { error } : {}),
         }
       : {}
