@@ -1,18 +1,18 @@
-import { DefaultParams, Queries, Schema, UrlLike } from "./types.ts";
-import { coerce, convertToSearchParams, getRaw } from "./utils.ts";
+import { ParamError, Queries, Schema, UrlLike } from "./types.ts";
+import { convertToSearchParams, getRaw } from "./utils.ts";
 
 export const smartQueries = <
-  Params extends Record<string, unknown> = DefaultParams
+  Params extends Record<string, unknown> = Record<string, unknown>
 >(
   url: UrlLike,
   schema?: Schema | Schema<Params>
 ): Queries<Params> | null => {
   const searchParams =
     url instanceof URLSearchParams ? url : convertToSearchParams(url);
-  const param: DefaultParams = {};
+  const param: Record<string, unknown> = {};
   const foreign: Record<string, string> = {};
   const rawParams: Record<string, string> = {};
-  const error: Queries["error"] = {};
+  const error: ParamError = {};
 
   let hasForeign = false;
   let hasError = false;
@@ -31,9 +31,7 @@ export const smartQueries = <
   }
 
   for (const key in schema) {
-    const { require, coerceTo, map, validate } = schema[key];
-    const rawVal = searchParams.get(key)!;
-    const val = coerceTo ? coerce(rawVal, coerceTo) : rawVal;
+    const { require, map, validate } = schema[key];
 
     if (require && !searchParams.has(key)) {
       hasError = true;
@@ -43,6 +41,7 @@ export const smartQueries = <
     }
 
     if (searchParams.has(key)) {
+      const val = searchParams.get(key)!;
       const finalVal = map ? map(val as never, key, rawParams) : val;
 
       if (validate) {
