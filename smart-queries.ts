@@ -2,16 +2,20 @@ import { ParamError, Queries, Schema, UrlLike } from "./types.ts";
 import { convertToSearchParams, getRaw } from "./utils.ts";
 
 export const smartQueries = <
-  Params extends Record<string, unknown> = Record<string, unknown>
+  Params extends Record<string, unknown> = Record<string, unknown>,
+  AssumeNoDuplicates extends boolean = false
 >(
   url: UrlLike,
-  schema?: Schema | Schema<Params>
-): Queries<Params> | null => {
+  schema?: Schema | Schema<Params, AssumeNoDuplicates>
+): Queries<Params, AssumeNoDuplicates> | null => {
   const searchParams =
     url instanceof URLSearchParams ? url : convertToSearchParams(url);
   const param: Record<string, unknown> = {};
   const foreign: Record<string, string> = {};
-  const rawParams: Record<string, string | string[]> = {};
+  const duplicate: string[] = [];
+  const rawParams = {} as AssumeNoDuplicates extends true
+    ? Record<string, string>
+    : Record<string, string | string[]>;
   const error: ParamError = {};
 
   let hasForeign = false;
@@ -23,6 +27,8 @@ export const smartQueries = <
 
   for (const [key, val] of searchParams) {
     const vals = searchParams.getAll(key);
+
+    if (vals.length > 1 && !duplicate.includes(key)) duplicate.push(key);
 
     if (!schema) {
       param[key] = vals.length === 1 ? vals.at(0) : vals;
@@ -70,6 +76,7 @@ export const smartQueries = <
     {
       raw: getRaw(url),
       param,
+      ...(duplicate.length > 0 ? { duplicate } : {}),
     },
     schema
       ? {

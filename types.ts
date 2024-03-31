@@ -1,19 +1,24 @@
 export type UrlLike = URL | URLSearchParams | `http${"" | "s"}://${string}`;
 
 export type Schema<
-  Params extends Record<string, unknown> = Record<string, unknown>
+  Params extends Record<string, unknown> = Record<string, unknown>,
+  AssumeNoDuplicates extends boolean = false
 > = {
   [K in keyof Params]: {
     require?: boolean;
     map?: (
       val: string,
       key: string,
-      rawParams: Record<string, string | string[]>
+      rawParams: AssumeNoDuplicates extends true
+        ? Record<string, string>
+        : Record<string, string | string[]>
     ) => Params[K];
     validate?: (
       val: Params[K],
       key: string,
-      rawParams: Record<string, string | string[]>
+      rawParams: AssumeNoDuplicates extends true
+        ? Record<string, string>
+        : Record<string, string | string[]>
     ) => boolean;
   };
 };
@@ -23,11 +28,14 @@ export type ParamError = {
   invalidKeys?: string[];
 };
 
-export type Queries<Params> = {
+export type Queries<Params, AssumeNoDuplicates> = {
   raw: string;
-  param: {
-    [K in keyof Params]: Params[K] | Params[K][];
-  };
+  param: AssumeNoDuplicates extends true
+    ? Params
+    : {
+        [K in keyof Params]: Params[K] | Params[K][];
+      };
   foreign?: string[];
+  duplicate?: string[];
   error?: ParamError;
 };
