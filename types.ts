@@ -35,7 +35,9 @@ export type Queries<Params, AssumeNoDuplicates> = {
     : {
         [K in keyof Params]: Params[K] | Params[K][];
       };
-  foreign?: string[];
+  foreign?: AssumeNoDuplicates extends true
+    ? Record<string, string>
+    : Record<string, string | string[]>;
   duplicate?: string[];
   error?: ParamError;
 };

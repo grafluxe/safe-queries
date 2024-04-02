@@ -11,7 +11,7 @@ export const smartQueries = <
   const searchParams =
     url instanceof URLSearchParams ? url : convertToSearchParams(url);
   const param: Record<string, unknown> = {};
-  const foreign: Record<string, string> = {};
+  const foreign: Record<string, string | string[]> = {};
   const duplicate: string[] = [];
   const rawParams = {} as AssumeNoDuplicates extends true
     ? Record<string, string>
@@ -25,19 +25,21 @@ export const smartQueries = <
     return null;
   }
 
-  for (const [key, val] of searchParams) {
-    const vals = searchParams.getAll(key);
+  for (const [key] of searchParams) {
+    const allVals = searchParams.getAll(key);
 
-    if (vals.length > 1 && !duplicate.includes(key)) duplicate.push(key);
+    if (allVals.length > 1 && !duplicate.includes(key)) duplicate.push(key);
+
+    const vals = allVals.length === 1 ? allVals.at(0)! : allVals;
 
     if (!schema) {
-      param[key] = vals.length === 1 ? vals.at(0) : vals;
+      param[key] = vals;
     } else {
-      rawParams[key] = vals.length === 1 ? vals.at(0)! : vals;
+      rawParams[key] = vals;
 
       if (!(key in schema)) {
         hasForeign = true;
-        foreign[key] = val;
+        foreign[key] = vals;
       }
     }
   }
