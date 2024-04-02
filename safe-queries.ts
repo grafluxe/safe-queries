@@ -1,7 +1,7 @@
 import { ParamError, Queries, Schema, UrlLike } from "./types.ts";
 import { convertToSearchParams, getRaw } from "./utils.ts";
 
-export const smartQueries = <
+export const safeQueries = <
   Params extends Record<string, unknown> = Record<string, unknown>,
   AssumeNoDuplicates extends boolean = false
 >(
