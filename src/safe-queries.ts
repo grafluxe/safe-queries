@@ -46,9 +46,9 @@ export const safeQueries = <
   }
 
   for (const key in schema) {
-    const { require, map, validate } = schema[key];
+    const { required, map, validate } = schema[key];
 
-    if (require && !searchParams.has(key)) {
+    if (required && !searchParams.has(key)) {
       hasError = true;
       if (!error.requiredKeys) error.requiredKeys = [];
       error.requiredKeys.push(key);

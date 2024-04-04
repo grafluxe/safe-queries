@@ -5,7 +5,7 @@ export type Schema<
   AssumeNoDuplicates extends boolean = false
 > = {
   [K in keyof Params]: {
-    require?: boolean;
+    required?: boolean;
     map?: (
       val: string,
       key: string,

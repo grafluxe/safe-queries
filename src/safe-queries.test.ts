@@ -56,7 +56,7 @@ Deno.test("Should return query string from 'raw' property", () => {
 Deno.test("Should be required", () => {
   const schema: Schema = {
     foo: {
-      require: true,
+      required: true,
     },
   };
   const { error } = safeQueries("http://site.com?bar", schema);
