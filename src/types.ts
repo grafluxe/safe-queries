@@ -26,6 +26,7 @@ export type Schema<
 export type ParamError = {
   requiredKeys?: string[];
   invalidKeys?: string[];
+  noQueryString?: true;
 };
 
 export type Queries<Params, AssumeNoDuplicates> = {

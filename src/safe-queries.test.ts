@@ -6,7 +6,13 @@ import { Schema } from "./types.ts";
 Deno.test("Should return null if no query string ", () => {
   const queries = safeQueries("http://grafluxe.com");
 
-  assertEquals(queries, null);
+  assertEquals(queries, {
+    raw: "",
+    param: {},
+    error: {
+      noQueryString: true,
+    },
+  });
 });
 
 Deno.test("Should concat repeating params ", () => {

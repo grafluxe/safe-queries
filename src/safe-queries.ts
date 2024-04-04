@@ -7,7 +7,7 @@ export const safeQueries = <
 >(
   url: UrlLike,
   schema?: Schema | Schema<Params, AssumeNoDuplicates>
-): Queries<Params, AssumeNoDuplicates> | null => {
+): Queries<Params, AssumeNoDuplicates> => {
   const searchParams =
     url instanceof URLSearchParams ? url : convertToSearchParams(url);
   const param: Record<string, unknown> = {};
@@ -22,7 +22,8 @@ export const safeQueries = <
   let hasError = false;
 
   if (searchParams.size === 0) {
-    return null;
+    hasError = true;
+    error.noQueryString = true;
   }
 
   for (const [key] of searchParams) {
@@ -79,6 +80,7 @@ export const safeQueries = <
       raw: getRaw(url),
       param,
       ...(duplicate.length > 0 ? { duplicate } : {}),
+      ...(hasError ? { error } : {}),
     },
     schema
       ? {
