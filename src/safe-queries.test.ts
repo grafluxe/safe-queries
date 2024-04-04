@@ -16,19 +16,19 @@ Deno.test("Should return null if no query string ", () => {
 });
 
 Deno.test("Should concat repeating params ", () => {
-  const { param } = safeQueries("http://grafluxe.com?t=1&t=2")!;
+  const { param } = safeQueries("http://grafluxe.com?t=1&t=2");
 
   assertEquals(param.t, ["1", "2"]);
 });
 
 Deno.test("Should concat repeating foreign params ", () => {
-  const { foreign } = safeQueries("http://grafluxe.com?t=1&t=2", {})!;
+  const { foreign } = safeQueries("http://grafluxe.com?t=1&t=2", {});
 
   assertEquals(foreign?.t, ["1", "2"]);
 });
 
 Deno.test("Should flag duplicate params ", () => {
-  const { duplicate } = safeQueries("http://grafluxe.com?t=1&t=2", {})!;
+  const { duplicate } = safeQueries("http://grafluxe.com?t=1&t=2", {});
 
   assertEquals(duplicate, ["t"]);
 });
@@ -46,11 +46,11 @@ Deno.test("Should return query string from 'raw' property", () => {
     ["foo", ""],
   ]);
 
-  assertEquals(safeQueries(str)!.raw, expected);
-  assertEquals(safeQueries(url)!.raw, expected);
-  assertEquals(safeQueries(searchParams1)!.raw, expected);
-  assertEquals(safeQueries(searchParams2)!.raw, expected);
-  assertEquals(safeQueries(searchParams3)!.raw, expected);
+  assertEquals(safeQueries(str).raw, expected);
+  assertEquals(safeQueries(url).raw, expected);
+  assertEquals(safeQueries(searchParams1).raw, expected);
+  assertEquals(safeQueries(searchParams2).raw, expected);
+  assertEquals(safeQueries(searchParams3).raw, expected);
 });
 
 Deno.test("Should be required", () => {
@@ -59,7 +59,7 @@ Deno.test("Should be required", () => {
       require: true,
     },
   };
-  const { error } = safeQueries("http://site.com?bar", schema)!;
+  const { error } = safeQueries("http://site.com?bar", schema);
 
   assert(error);
   assertEquals(error, { requiredKeys: ["foo"] });
@@ -71,7 +71,7 @@ Deno.test("Should map type", () => {
       map: (val: string) => Number(val),
     },
   };
-  const { param } = safeQueries("http://site.com?foo", schema)!;
+  const { param } = safeQueries("http://site.com?foo", schema);
 
   assertEquals(typeof param.foo, "number");
 });
@@ -82,7 +82,7 @@ Deno.test("Should be invalid", () => {
       validate: () => false,
     },
   };
-  const { error } = safeQueries("http://site.com?foo", schema)!;
+  const { error } = safeQueries("http://site.com?foo", schema);
 
   assertEquals(error?.invalidKeys, ["foo"]);
 });
@@ -96,7 +96,7 @@ Deno.test("Should be invalid after map", () => {
       validate: (val: number) => val > 10,
     },
   };
-  const { error } = safeQueries("http://site.com?foo=1", schema)!;
+  const { error } = safeQueries("http://site.com?foo=1", schema);
 
   assertEquals(error?.invalidKeys, ["foo"]);
 });
