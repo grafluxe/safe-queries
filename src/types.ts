@@ -1,4 +1,4 @@
-export type UrlLike = URL | URLSearchParams | `http${"" | "s"}://${string}`;
+export type UrlLike = URL | URLSearchParams | string;
 
 export type Schema<
   Params extends Record<string, unknown> = Record<string, unknown>,

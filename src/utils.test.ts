@@ -7,6 +7,7 @@ Deno.test("Should get params from string", () => {
   assertEquals(getRaw(new URLSearchParams(expected)), expected);
   assertEquals(getRaw(new URL(`http://site.com${expected}`)), expected);
   assertEquals(getRaw(`http://site.com${expected}`), expected);
+  assertEquals(getRaw(expected), expected);
   assertEquals(getRaw("http://site.com"), "");
 });
 
