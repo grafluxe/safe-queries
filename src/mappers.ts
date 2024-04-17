@@ -1,13 +1,14 @@
 import { splitter } from "./utils.ts";
 
-export const toNumber = (val: string) => (val === "" ? NaN : Number(val));
+export const toNumber = (val: string): number =>
+  val === "" ? NaN : Number(val);
 
-export const toBoolean = (val: string) =>
+export const toBoolean = (val: string): boolean | null =>
   val === "true" || !val ? true : val === "false" ? false : null;
 
 export const toArray =
   <T = unknown[]>(delimiter: string | string[] = ",", coerce = false) =>
-  (val: string) => {
+  (val: string): T | never[] => {
     if (!val) return [];
 
     const arr = splitter(

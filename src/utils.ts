@@ -1,21 +1,23 @@
 import { UrlLike } from "./types.ts";
 
-const getParamsFromString = (url: string) =>
+const getParamsFromString = (url: string): string =>
   url.includes("?") ? url.slice(url.indexOf("?")) : "";
 
-export const getRaw = (url: UrlLike) =>
+export const getRaw = (url: UrlLike): string =>
   url instanceof URL
     ? url.search
     : url instanceof URLSearchParams
     ? `?${url.toString().replace(/=$|=(&)/g, "$1")}`
     : getParamsFromString(url);
 
-export const convertToSearchParams = (url: Exclude<UrlLike, URLSearchParams>) =>
+export const convertToSearchParams = (
+  url: Exclude<UrlLike, URLSearchParams>
+): URLSearchParams =>
   new URLSearchParams(
     url instanceof URL ? url.search : getParamsFromString(url)
   );
 
-const coerce = (val: string) => {
+const coerce = (val: string): boolean | number | string => {
   if (val === "true") return true;
   if (val === "false") return false;
 
