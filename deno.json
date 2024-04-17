@@ -1,5 +1,8 @@
 {
+  "name": "@grafluxe/safe-queries",
+  "version": "1.0.0",
   "imports": {
     "assert/": "https://deno.land/std@0.221.0/assert/"
-  }
+  },
+  "exports": "./mod.ts"
 }
