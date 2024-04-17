@@ -1,5 +1,4 @@
-import { assert } from "std/assert/assert.ts";
-import { assertEquals } from "std/assert/assert_equals.ts";
+import { assert, assertEquals } from "assert/mod.ts";
 import { safeQueries } from "./safe-queries.ts";
 import { Schema } from "./types.ts";
 

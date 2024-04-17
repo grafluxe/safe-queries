@@ -1,4 +1,4 @@
-import { assert, assertEquals } from "std/assert/mod.ts";
+import { assert, assertEquals } from "assert/mod.ts";
 import { convertToSearchParams, getRaw, splitter } from "./utils.ts";
 
 Deno.test("Should get params from string", () => {

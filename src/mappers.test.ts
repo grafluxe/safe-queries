@@ -1,4 +1,4 @@
-import { assertEquals } from "std/assert/mod.ts";
+import { assertEquals } from "assert/mod.ts";
 import { toArray, toBoolean, toNumber } from "./mappers.ts";
 
 Deno.test("Should map to number", () => {
