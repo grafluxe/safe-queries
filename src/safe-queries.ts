@@ -1,4 +1,4 @@
-import { ParamError, Queries, Schema, UrlLike } from "./types.ts";
+import type { ParamError, Queries, Schema, UrlLike } from "./types.ts";
 import { convertToSearchParams, getRaw } from "./utils.ts";
 
 /**
