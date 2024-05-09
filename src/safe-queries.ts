@@ -1,6 +1,50 @@
 import { ParamError, Queries, Schema, UrlLike } from "./types.ts";
 import { convertToSearchParams, getRaw } from "./utils.ts";
 
+/**
+ * Create type safe params which can be mapped and validated as needed.
+ *
+ * @param url The URL to parse. It accepts a string, [URL](https://developer.mozilla.org/en-US/docs/Web/API/URL) or [URLSearchParams](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams).
+ * @param schema The schema used to define/constrain the returned object.
+ * @returns A Queries object.
+ * @example
+ * ```ts
+ * type Params = {
+ *   who: string;
+ *   age?: number;
+ *   other: Date;
+ * };
+ *
+ * const schema: Schema<Params, true> = {
+ *   who: {
+ *     required: true,
+ *   },
+ *   age: {
+ *     map: toNumber,
+ *     validate: (num?: number) => (num ? num > 100 : false),
+ *   },
+ *   other: {
+ *     map: (val: string) => new Date(val),
+ *     validate: (date: Date) => date.getMonth() > 9,
+ *   },
+ * };
+ *
+ * const url = "http://site.com?who=foo&age=99&bar=not-expected";
+ * const { param, foreign, error } = safeQueries(url, schema);
+ * ```
+ *
+ * ### Params
+ *
+ * You can pass a type into either the `Schema` or `safeQueries` function (no need to pass to both) so that TypeScript goodness flows through the logic and is returned in the `params` object.
+ *
+ * ### AssumeNoDuplicates
+ *
+ * The query string spec allows for [duplicate query params](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams#duplicate_search_parameters).
+ *
+ *`safeQueries` logic supports duplicate query params, but allows you to opt out of this expectation at the type-level. While this does not alter what is returned, setting `AssumeNoDuplicates` to `true` sets the type of your param to `T` and not `T | T[]`.
+ *
+ * More samples [here](https://github.com/grafluxe/safe-queries/blob/main/samples.ts).
+ */
 export const safeQueries = <
   Params extends Record<string, unknown> = Record<string, unknown>,
   AssumeNoDuplicates extends boolean = false
