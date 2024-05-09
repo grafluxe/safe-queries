@@ -25,7 +25,7 @@ The `url` argument accepts a string, [URL](https://developer.mozilla.org/en-US/d
 Simplified for readability (see [types.ts](./src/types.ts) for the full type):
 
 ```ts
-<for-each-query-string>
+for-each-query-string…
 
 {
 
@@ -152,7 +152,7 @@ This projects ships with the following mapper functions to help coerce your valu
 
 - Returns a `number` or `NaN`.
 
-### toBoolean`
+### toBoolean
 
 - Returns `true` if the value equals "true" or _undefined_
   - e.g. `http://site.com?debug` will result in `param.debug === true`
@@ -164,7 +164,7 @@ This projects ships with the following mapper functions to help coerce your valu
 
 - Returns `Array<T = unknown[]>` separated by the delimiter(s) set
   - Nested arrays are supported
-  - The default
+  - The default value is ","
 - The values can be coerced into `booleans` (if "true" | "false") and `numbers` by setting the `coerce` argument to`true`
 
 #### Example
